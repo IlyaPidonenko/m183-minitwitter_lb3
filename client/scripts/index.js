@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const postTweetButton = document.getElementById("post-tweet");
   const logoutButton = document.getElementById("logout");
 
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) {
+  const token = localStorage.getItem("token");
+  if (!token) {
     window.location.href = "/login.html";
   }
 
@@ -42,16 +42,16 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const postTweet = async () => {
-    const username = user.username;
     const timestamp = new Date().toISOString();
     const text = newTweetInput.value;
-    const query = `INSERT INTO tweets (username, timestamp, text) VALUES ('${username}', '${timestamp}', '${text}')`;
+    const data = {timestamp, text};
     await fetch("/api/feed", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        authorization: "Bearer" + token
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify( data ),
     });
     await getFeed();
     newTweetInput.value = "";
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   logoutButton.addEventListener("click", () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     window.location.href = "/login.html";
   });
 

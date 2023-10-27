@@ -2,8 +2,25 @@ const { initializeDatabase, queryDB, insertDB } = require("./database");
 const { body } = require("express-validator");
 const bcrypt = require("bcrypt");
 const pino = require("pino")();
+const jwt = require('jsonwebtoken');
 
 let db;
+
+const authMiddleware = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return res.status(401).json({ error: "No authorization header." });
+  }
+  const [prefix, token] = authorization.split(" ");
+  if (prefix !== "Bearer") {
+    return res.status(401).json({ error: "Invalid authorization prefix." });
+  }
+  const tokenValidation = jwt.verify(token, jwtSecret);
+  if (!tokenValidation?.data) {
+    return res.status(401).json({ error: "Invalid token." });
+  }
+  next();
+};
 
 const initializeAPI = async (app) => {
   db = await initializeDatabase();
@@ -23,6 +40,15 @@ const initializeAPI = async (app) => {
       .escape(),
     login
   );
+  app.get("/api/feed", authMiddleware, getFeed);
+  app.post(
+    "/api/feed",
+    authMiddleware,
+    body("username").notEmpty().withMessage("username is required."),
+    body("timestamp").notEmpty().withMessage("timestamp is required."),
+    body("text").notEmpty().withMessage("text is required."),
+    postTweet
+  );
 };
 
 const getFeed = async (req, res) => {
@@ -31,29 +57,33 @@ const getFeed = async (req, res) => {
   res.json(tweets);
 };
 
-const postTweet = (req, res) => {
-  insertDB(db, req.body.query);
+const postTweet = async(req, res) => {
+  const { username, timestamp, text } = req.body;
+  const query = `INSERT INTO tweets (username, timestamp, text) VALUES ('${username}', '${timestamp}', '${text}')`;
+  await queryDB(db, query);
   res.json({ status: "ok" });
 };
 
 const login = async (req, res) => {
   const { username, password } = req.body;
-  const query = `SELECT * FROM users WHERE username = '${username}'`;
+  const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
   const user = await queryDB(db, query);
   
   if (user.length === 1) {
-    const dbHash = user[0].password; 
-    bcrypt.compare(password, dbHash, function(err, result) {
-      if (result) {
-        pino.info(`Successful login attempt for user: ${username}`);
-        res.json(user[0]);
-      } else {
-        pino.error(`Failed login attempt for user: ${username}`);
-        res.json(null);
-      }
-    });
+    const username = user[0].username;
+
+    const jwtSecret = "supersecret";
+    const token = jwt.sign(
+      {
+        exp: Math.floor(Date.now() / 1000) + 60 * 60,
+        data: username,
+      },
+      jwtSecret
+    );
+    res.json({ token });
+  
   } else {
-    res.json(null);
+    res.status(401).json({ error: "The password or the username are false" });
   }
 };
 
