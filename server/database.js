@@ -20,10 +20,11 @@ const createUsersTable = `CREATE TABLE users (
   password TEXT
 )`;
 const seedUsersTable = `INSERT INTO users (username, password) VALUES
-  ('switzerchees', '123456'),
-  ('john', '123456'),
-  ('jane', '123456')
+  ('switzerchees', '${bcrypt.hashSync('123456', 10)}'),
+  ('john', '${bcrypt.hashSync('123456', 10)}'),
+  ('jane', '${bcrypt.hashSync('123456', 10)}')
 `;
+
 
 const initializeDatabase = async () => {
   const db = new sqlite3.Database("./minitwitter.db");

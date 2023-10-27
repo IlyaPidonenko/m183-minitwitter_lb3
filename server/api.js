@@ -52,10 +52,13 @@ const initializeAPI = async (app) => {
 };
 
 const getFeed = async (req, res) => {
-  const query = req.query.q;
+
+  const query = "SELECT * FROM tweets ORDER BY id DESC;";
   const tweets = await queryDB(db, query);
+  
   res.json(tweets);
 };
+
 
 const postTweet = async(req, res) => {
   const { username, timestamp, text } = req.body;

@@ -34,8 +34,11 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const getFeed = async () => {
-    const query = "SELECT * FROM tweets ORDER BY id DESC";
-    const response = await fetch(`/api/feed?q=${query}`);
+    const response = await fetch(`/api/feed`, {
+      headers: {
+        authorization: "Bearer" + token,
+      }
+  });
     const tweets = await response.json();
     const tweetsHTML = tweets.map(generateTweet).join("");
     document.getElementById("feed").innerHTML = tweetsHTML;
@@ -45,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const timestamp = new Date().toISOString();
     const text = newTweetInput.value;
     const data = {timestamp, text};
+    
     await fetch("/api/feed", {
       method: "POST",
       headers: {
