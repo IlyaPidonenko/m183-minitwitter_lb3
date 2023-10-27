@@ -63,6 +63,16 @@ accepts@~1.3.8:
     mime-types "~2.1.34"
     negotiator "0.6.3"
 
+aes-encryption@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/aes-encryption/-/aes-encryption-1.0.4.tgz"
+  integrity sha512-Mb3UAbIvY0wiK6GjZGolVLXvIRHukUoSUQOOItjHNGuEWuClSsBPWEMdLYbCPuIKIFF5YkHTtWT+VqbLIQK/Og==
+
+aes@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/aes/-/aes-0.1.0.tgz"
+  integrity sha512-zoxY6y00WNu5EVioxSm+X1uIcx0EIRGdRPGO+C3RsccQT/JgMHo/GiGfl7ryOTdKuCtbnSHrkthTjPSME2oOjA==
+
 agent-base@^6.0.2, agent-base@6:
   version "6.0.2"
   resolved "https://registry.npmjs.org/agent-base/-/agent-base-6.0.2.tgz"
@@ -1257,6 +1267,11 @@ sqlite3@^5.1.6:
     tar "^6.1.11"
   optionalDependencies:
     node-gyp "8.x"
+
+sqlstring@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/sqlstring/-/sqlstring-2.3.3.tgz"
+  integrity sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==
 
 ssri@^8.0.0, ssri@^8.0.1:
   version "8.0.1"
